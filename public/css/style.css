@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+   
+:root {
+    --amarillo1: #f7ca39;
+    --amarillo2: #f2991f;
+    --negro: #000;
+    --blanco: #fff;
+}
+
+#btnaction {
+    background-color: var(--amarillo2);
+    color: var(--blanco);
+    font-weight: bold;
+    border: 1px solid var(--amarillo2);
+}
+#btnaction:hover {
+    background-color: var(--amarillo1);
+    color: var(--blanco);
+    font-weight: bold; 
+}

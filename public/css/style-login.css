@@ -1,0 +1,33 @@
+html, body {
+    background-image:url('../imgs/avion.png');               
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-position-y: -150%;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#clavehead{
+    background-color: var(--amarillo1);
+    font-size:20px;
+    font-weight: bold;    
+    border: 1px solid var(--amarillo2);
+}
+#contenido{
+    border: 1px solid var(--amarillo2);
+}
+#btnacces {
+    background-color: var(--amarillo2);
+    color: var(--blanco);
+    font-weight: bold;
+    border: 1px solid var(--amarillo2);
+    border-radius: 2rem;
+}
+#btnacces:hover {
+    background-color: var(--amarillo1);
+    color: var(--blanco);
+    font-weight: bold; 
+}
+#clave {
+    border: 1px solid var(--amarillo2);
+
+}
