@@ -18,7 +18,7 @@
                                         <b-icon-eye></b-icon-eye> Visualizar
                                     </b-button>
                                      <b-button v-else id="btnaction" pill size="sm"
-                                        @click="show_enlaces(recurso.id)">
+                                        @click="show_enlaces(recurso)">
                                         <b-icon-info-circle></b-icon-info-circle> Mostrar
                                     </b-button>
                                 </b-col>
@@ -36,27 +36,33 @@
         </b-card>
         <!-- MODALS -->
         <!-- MOSTRAR LINKS -->
-        <b-modal ref="modal-enlaces" title="Enlaces" hide-footer>
-            <b-table v-if="!load" :items="enlaces" :fields="fields">
-                <template v-slot:cell(view)="data">
-                    <b-button v-if="data.item.tipo == 'sitio'"
-                        size="sm" pill variant="info">
-                            <b-icon-link45deg></b-icon-link45deg> Visitar
-                    </b-button>
-                    <div v-else>
-                        <audio :title="data.item.nombre" controls="true">
-                            <source :src="set_link(data.item.link)">
-                        </audio>
-                    </div>
-                </template>
-                <template v-slot:cell(download)="data">
-                    <b-button v-if="data.item.tipo == 'track'"
-                        :href="`${set_link(data.item.link)}?dl=1`"
-                        pill size="sm" variant="primary">
-                        <b-icon-download></b-icon-download>
-                    </b-button>
-                </template>
-            </b-table>
+        <b-modal ref="modal-enlaces" title="" hide-footer
+            :size="showByTipo == 'Games' ? 'xl':'md'">
+            <div v-if="!load">
+                <b-embed v-if="showByTipo == 'Games'" type="iframe"
+                    aspect="16by9" :src="enlaceGames" allowfullscreen>
+                </b-embed>
+                <b-table v-else :items="enlaces" :fields="fields">
+                    <template v-slot:cell(view)="data">
+                        <b-button v-if="data.item.tipo == 'sitio'"
+                            size="sm" pill variant="info">
+                                <b-icon-link45deg></b-icon-link45deg> Visitar
+                        </b-button>
+                        <div v-else>
+                            <audio :title="data.item.nombre" controls="true">
+                                <source :src="set_link(data.item.link)">
+                            </audio>
+                        </div>
+                    </template>
+                    <template v-slot:cell(download)="data">
+                        <b-button v-if="data.item.tipo == 'track'"
+                            :href="`${set_link(data.item.link)}?dl=1`"
+                            pill size="sm" variant="primary">
+                            <b-icon-download></b-icon-download>
+                        </b-button>
+                    </template>
+                </b-table>
+            </div>
             <load-component v-else></load-component>
         </b-modal>
     </div>
@@ -77,7 +83,9 @@ export default {
                 { key: 'view', label: '' },
                 { key: 'download', label: '' }
             ],
-            link: ''
+            link: '',
+            showByTipo: 'links',
+            enlaceGames: null,
         }
     },
     methods: {
@@ -86,9 +94,15 @@ export default {
             return link.replace('dl=0', 'dl=1');
         },
         // MOSTRAR ENLACES
-        show_enlaces(recurso_id){
+        show_enlaces(recurso){
             this.$refs['modal-enlaces'].show();
-            this.get_enlaces(this.libro.id, recurso_id);
+            if(recurso.recurso.includes('Games')){
+                this.enlaceGames = recurso.libros[0].pivot.link;
+                this.showByTipo = 'Games';
+            } else {
+                this.showByTipo = 'Links';
+                this.get_enlaces(this.libro.id, recurso.id);
+            }
         },
         // ESTABLECER LINK
         set_link(link){
