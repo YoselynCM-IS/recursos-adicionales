@@ -79,7 +79,7 @@ export default {
     data(){
         return {
             fields: [
-                { key: 'nombre', label: 'Enlace' },
+                { key: 'nombre', label: '' },
                 { key: 'view', label: '' },
                 { key: 'download', label: '' }
             ],
