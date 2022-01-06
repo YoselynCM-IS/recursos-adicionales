@@ -110,11 +110,16 @@ class UserController extends Controller
         $libros_count = $this->get_count_libros($role_id, $libro_id);
         $libro = Libro::find($libro_id);
         
-        for ($i=0; $i < (int) $request->quantity; $i++) { 
+        $numeros = collect();
+        for ($i=0; $i < (int)$request->quantity; $i++) { 
+            $numeros->push($i + 1);
+        }
+
+        $numeros->map(function($n) use(&$libros_count, $role_id, $libro, $request){
             $libros_count++;
             $codigo = $this->set_codigo($role_id, $libros_count, $libro->code);
             $this->create_user($request, $codigo);
-        }
+        });
 
         return response()->json(true);
     }
