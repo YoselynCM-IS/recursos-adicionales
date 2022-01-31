@@ -6,7 +6,7 @@
                 {{ data.index + 1 }}
             </template>
             <template v-slot:cell(actions)="data">
-                <b-button v-if="verify_recurso(data.item.recurso)"
+                <b-button v-if="verify_recurso_1(data.item.recurso)"
                     variant="warning" pill size="sm" 
                     @click="editRecurso(data.item, data.index)">
                     <b-icon-pencil></b-icon-pencil>
@@ -56,10 +56,10 @@
 <script>
 import LoadComponent from '../../partials/LoadComponent.vue';
 import SubmitComponent from '../../partials/SubmitComponent.vue';
-import VerifyRecurso from '../../../mixins/VerifyRecurso';
+// import VerifyRecurso from '../../../mixins/VerifyRecurso';
 export default {
   components: { SubmitComponent, LoadComponent },
-  mixins: [VerifyRecurso],
+//   mixins: [VerifyRecurso],
     props: ['libro'],
     data(){
         return {
@@ -134,6 +134,12 @@ export default {
             this.formEnlace.libro_id = this.libro.id;
             this.formEnlace.recurso_id = recurso.id;
             this.$refs['modal-enlaces'].show();
+        },
+        verify_recurso_1(recurso){
+            if(recurso == 'Enlaces') return false;
+            if(recurso == 'Links') return false;
+            if(recurso == 'Links Tracks') return false;
+            return true;
         }
     }
 }

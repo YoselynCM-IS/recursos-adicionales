@@ -11,12 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // ROLES
-        \DB::table('roles')->insert([
-            0 => [ 'role' => 'admin' ],
-            1 => [ 'role' => 'teacher' ],
-            2 => [ 'role' => 'student' ],
-        ]);
+        // // ROLES
+        // \DB::table('roles')->insert([
+        //     0 => [ 'role' => 'admin' ],
+        //     1 => [ 'role' => 'teacher' ],
+        //     2 => [ 'role' => 'student' ],
+        // ]);
 
         // USUARIO PRUEBA
         \DB::table('users')->insert([
@@ -29,10 +29,10 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        // TIPOS
-        \DB::table('tipos')->insert([
-            0 => [ 'tipo' => 'común' ],
-            1 => [ 'tipo' => 'inglés' ]
-        ]);
+        // // TIPOS
+        // \DB::table('tipos')->insert([
+        //     0 => [ 'tipo' => 'común' ],
+        //     1 => [ 'tipo' => 'inglés' ]
+        // ]);
     }
 }
