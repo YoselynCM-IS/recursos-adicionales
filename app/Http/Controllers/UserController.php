@@ -228,21 +228,20 @@ class UserController extends Controller
         // YA REGISTRADO
         $role_id = $user->role_id;
 
-        $libro_recurso = \DB::table('libro_recurso')
-                        ->where('libro_id', $libro_id)
-                        ->get();
-        $ids = [];
-        $libro_recurso->map(function($lr) use(&$ids){
-            $ids[] = $lr->recurso_id;
-        });
+        // $libro_recurso = \DB::table('libro_recurso')
+        //                 ->where('libro_id', $libro_id)
+        //                 ->get();
+        // $ids = [];
+        // $libro_recurso->map(function($lr) use(&$ids){
+        //     $ids[] = $lr->recurso_id;
+        // });
 
+
+        // dd($libro->recursos);
         if($role_id == 2){
-            $recursos = Recurso::whereIn('id', $ids)
-                            ->with('libros')->get();
+            $recursos = $libro->recursos;
         } else {
-            $recursos = Recurso::whereIn('id', $ids)
-                            ->where('role_id', $role_id)
-                            ->with('libros')->get();
+            $recursos = $libro->recursos->where('role_id', $role_id);
         }
 
         $libro = collect([

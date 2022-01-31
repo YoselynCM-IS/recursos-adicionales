@@ -14,7 +14,7 @@
                                 <b-col>
                                     <b-button v-if="verify_recurso(recurso.recurso)"
                                         id="btnaction" pill target="blank" size="sm" 
-                                        :href="recurso.libros[0].pivot.link">
+                                        :href="recurso.pivot.link">
                                         <b-icon-eye></b-icon-eye> Visualizar
                                     </b-button>
                                      <b-button v-else id="btnaction" pill size="sm"
@@ -23,7 +23,7 @@
                                     </b-button>
                                 </b-col>
                                 <b-col v-if="verify_recurso(recurso.recurso)">
-                                    <b-button id="btnaction" pill :href="downloadRec(recurso.libros[0].pivot.link)"
+                                    <b-button id="btnaction" pill :href="downloadRec(recurso.pivot.link)"
                                         size="sm">
                                         <b-icon-download></b-icon-download> Descargar
                                     </b-button>
@@ -97,7 +97,7 @@ export default {
         show_enlaces(recurso){
             this.$refs['modal-enlaces'].show();
             if(recurso.recurso.includes('Games')){
-                this.enlaceGames = recurso.libros[0].pivot.link;
+                this.enlaceGames = recurso.pivot.link;
                 this.showByTipo = 'Games';
             } else {
                 this.showByTipo = 'Links';
