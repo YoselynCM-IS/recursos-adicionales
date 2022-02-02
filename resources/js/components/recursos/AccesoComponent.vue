@@ -37,7 +37,8 @@
         <!-- MODALS -->
         <!-- MOSTRAR LINKS -->
         <b-modal ref="modal-enlaces" title="" hide-footer
-            :size="showByTipo == 'Games' ? 'xl':'md'">
+            size="xl">
+            <!-- :size="showByTipo == 'Games' ? 'xl':'md'" -->
             <div v-if="!load">
                 <b-embed v-if="showByTipo == 'Games'" type="iframe"
                     aspect="16by9" :src="enlaceGames" allowfullscreen>
@@ -45,7 +46,7 @@
                 <b-table v-else :items="enlaces" :fields="fields">
                     <template v-slot:cell(view)="data">
                         <b-button v-if="data.item.tipo == 'sitio'"
-                            size="sm" pill variant="info">
+                            size="sm" pill variant="info" :href="data.item.link" target="blank">
                                 <b-icon-link45deg></b-icon-link45deg> Visitar
                         </b-button>
                         <div v-else>
