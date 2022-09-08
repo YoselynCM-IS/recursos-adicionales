@@ -41,7 +41,10 @@
             <!-- :size="showByTipo == 'Games' ? 'xl':'md'" -->
             <div v-if="!load">
                 <b-embed v-if="showByTipo == 'Games'" type="iframe"
-                    aspect="16by9" :src="enlaceGames" allowfullscreen>
+                    aspect="16by9" :src="enlaceRecurso" allowfullscreen>
+                </b-embed>
+                <b-embed v-if="showByTipo == 'Flipbook'" type="iframe"
+                    aspect="16by9" :src="enlaceRecurso" allowfullscreen>
                 </b-embed>
                 <b-table v-else :items="enlaces" :fields="fields">
                     <template v-slot:cell(view)="data">
@@ -86,7 +89,7 @@ export default {
             ],
             link: '',
             showByTipo: 'links',
-            enlaceGames: null,
+            enlaceRecurso: null,
         }
     },
     methods: {
@@ -98,12 +101,17 @@ export default {
         show_enlaces(recurso){
             this.$refs['modal-enlaces'].show();
             if(recurso.recurso.includes('Games')){
-                this.enlaceGames = recurso.pivot.link;
+                this.enlaceRecurso = recurso.pivot.link;
                 this.showByTipo = 'Games';
-            } else {
+            } 
+            if(recurso.recurso.includes('Links')) {
                 this.showByTipo = 'Links';
                 this.get_enlaces(this.libro.id, recurso.id);
             }
+            if(recurso.recurso.includes('Flipbook')){
+                this.enlaceRecurso = recurso.pivot.link;
+                this.showByTipo = 'Flipbook';
+            } 
         },
         // ESTABLECER LINK
         set_link(link){
