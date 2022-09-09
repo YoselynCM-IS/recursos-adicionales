@@ -40,19 +40,9 @@
             size="xl">
             <!-- :size="showByTipo == 'Games' ? 'xl':'md'" -->
             <div v-if="!load">
-                <!-- <b-embed v-if="showByTipo == 'Games'" type="iframe"
+                <b-embed v-if="showByTipo == 'Games' || showByTipo == 'Flipbook'" type="iframe"
                     aspect="16by9" :src="enlaceRecurso" allowfullscreen>
                 </b-embed>
-                <b-embed v-if="showByTipo == 'Flipbook'" type="iframe"
-                    aspect="16by9" :src="enlaceRecurso" allowfullscreen>
-                </b-embed> -->
-                <iframe v-if="showByTipo == 'Games' || showByTipo == 'Flipbook'"
-                    id="inlineFrameExample"
-                    title="Inline Frame Example"
-                    width="300"
-                    height="200"
-                    :src="enlaceRecurso">
-                </iframe>
                 <b-table v-else :items="enlaces" :fields="fields">
                     <template v-slot:cell(view)="data">
                         <b-button v-if="data.item.tipo == 'sitio'"
