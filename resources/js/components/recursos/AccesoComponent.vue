@@ -57,7 +57,7 @@
                     </template>
                     <template v-slot:cell(download)="data">
                         <b-button v-if="data.item.tipo == 'track'"
-                            :href="`${set_link(data.item.link)}?dl=1`"
+                            :href="`${down_link(data.item.link)}`"
                             pill size="sm" variant="primary">
                             <b-icon-download></b-icon-download>
                         </b-button>
@@ -110,13 +110,14 @@ export default {
                 this.showByTipo = 'Flipbook';
             } 
         },
-        // ESTABLECER LINK
-        set_link(link){
-            let inicio = link.indexOf('/s/');
-            let final = link.indexOf('?dl=0');
-            let id = link.substring(inicio + 3, final);
-            return `https://dl.dropbox.com/s/${id}`;
+        // ESTABLECER LINK DE DESCARGA
+        down_link(link){;
+            return link.replace('?dl=0', '?dl=1');
         },
+        // ESTABLECER LINK DE CONSULTA
+        set_link(link){
+            return link.replace("https://www.dropbox.com", "https://dl.dropboxusercontent.com");
+        }
     }
 }
 </script>
