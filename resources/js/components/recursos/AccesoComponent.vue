@@ -112,7 +112,7 @@ export default {
         },
         // ESTABLECER LINK DE DESCARGA
         down_link(link){;
-            return link.replace('?dl=0', '?dl=1');
+            return link.replace('dl=0', 'dl=1');
         },
         // ESTABLECER LINK DE CONSULTA
         set_link(link){
