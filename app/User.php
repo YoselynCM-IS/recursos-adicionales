@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Acceso;
 use App\Role;
+use App\Code;
 
 class User extends Authenticatable
 {
@@ -18,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'role_id', 'codigo', 'name', 'email', 'password', 'estado'
+        'role_id', 'code_id', 'name', 'email', 'password', 'estado'
     ];
 
     /**
@@ -49,6 +50,12 @@ class User extends Authenticatable
     // Un usuario solo puede tener un acceso
     public function acceso(){
         return $this->hasOne(Acceso::class);
+    }
+
+    // 1 a muchos (INVERSO)
+    //Un usuario solo puede tener un codigo
+    public function code(){
+        return $this->belongsTo(Code::class);
     }
 
     public static function navigation(){

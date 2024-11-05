@@ -8,6 +8,10 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Acceso;
+use App\Code;
 
 class RegisterController extends Controller
 {
@@ -51,23 +55,53 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8'],
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function create(array $data)
+
+    public function register(Request $request)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $this->validator($request->all())->validate();
+        
+        $code = Code::where('codigo', $request->password)->first();
+        if($code){
+            $user = User::where('email', $request->email)->where('code_id', $code->id)->first();
+            if(!$user){
+                \DB::beginTransaction();
+                try {
+                    $user = User::create([
+                        'role_id' => $code->role_id, 
+                        'code_id' => $code->id, 
+                        'name' => strtoupper($request->name),
+                        'email' => $request->email,
+                        'password' => Hash::make($request->password),
+                        'estado' => 'activo'
+                    ]);
+
+                    $months = $code->months;
+                    $hoy = Carbon::now()->format('Y-m-d');
+                    $fecha = date("Y-m-d",strtotime($hoy."+ ".$months." month"));
+                    $final = date("Y-m-d",strtotime($fecha."- 1 days")); 
+                    Acceso::create([
+                        'user_id' => $user->id, 
+                        'libro_id' => $code->libro_id, 
+                        'months' => $months,
+                        'inicio' => $hoy,
+                        'final'  => $final
+                    ]);
+
+                    \DB::commit();
+                } catch (Exception $e) {
+                    \DB::rollBack();
+                    return response()->json($e->getMessage());
+                }
+                return redirect()->route('login')->with('status', 'Estamos a punto de terminar. Por favor, revisa tu correo electrónico y haz clic en el enlace que te hemos enviado para poder acceder.');
+            }
+            return redirect()->route('register')->with('status', 'Tus datos ya se encuentran registrados.');
+        }
+        
+        return redirect()->route('register')->with('status', 'El código que ingresaste no es valido, por favor revisa y vuelve a intentarlo.');
     }
 }

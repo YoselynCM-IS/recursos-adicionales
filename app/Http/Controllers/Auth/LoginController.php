@@ -39,20 +39,6 @@ class LoginController extends Controller
         } else {
             return 'users/index';
         }
-    } 
-
-    // CAMPO USER, VA A SER CODIGO
-    public function username() {
-        return 'codigo';
-    }
-
-    // PARA VALIDAR LA CONTRASEÑA
-    protected function validateLogin(Request $request) {
-        // dd($request);
-        $request->validate([
-            $this->username() => 'required|string', 
-            'password' => 'required',
-        ]);
     }
 
     //Sobreescribir metodo logout para cerrar sesion, y nos ubique en la vista login

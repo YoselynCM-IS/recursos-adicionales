@@ -41,7 +41,7 @@
             color:#a9343A;
         }
         #logeo {
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 600;
             color:#9E1F63;
         }
@@ -87,8 +87,13 @@
                         <!-- Authentication Links -->
                         @guest
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}" >
+                                <a class="nav-link" href="{{ url('/login') }}" >
                                     <i class="fa fa-unlock-alt" id="logeo"> {{ __("Iniciar sesión") }}</i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/register') }}" >
+                                    <i class="fa fa-user" id="logeo"> {{ __("Registro") }}</i>
                                 </a>
                             </li>
                         @else
