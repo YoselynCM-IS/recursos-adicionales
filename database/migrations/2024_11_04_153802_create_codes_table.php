@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreign('libro_id')->references('id')->on('libros');
             $table->string('codigo', 25)->unique();
             $table->integer('months')->default(0);
+            $table->integer('limite')->default(0);
             $table->timestamps();
         });
     }

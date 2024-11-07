@@ -11,7 +11,7 @@ class Code extends Model
     use HasFactory;
 
     protected $fillable = [
-        'codigo'
+        'role_id', 'libro_id', 'codigo', 'months', 'limite'
     ];
 
     // 1 a MUCHOS

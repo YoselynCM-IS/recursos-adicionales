@@ -70,41 +70,45 @@ class RegisterController extends Controller
         if($code){
             $user = User::where('email', $request->email)->where('code_id', $code->id)->first();
             if(!$user){
-                \DB::beginTransaction();
-                try {
-                    $user = User::create([
-                        'role_id' => $code->role_id, 
-                        'code_id' => $code->id, 
-                        'name' => strtoupper($request->name),
-                        'email' => $request->email,
-                        'password' => Hash::make($code->codigo),
-                        'estado' => 'activo'
-                    ]);
+                if($code->limite > 0){
+                    \DB::beginTransaction();
+                    try {
+                        $user = User::create([
+                            'role_id' => $code->role_id, 
+                            'code_id' => $code->id, 
+                            'name' => strtoupper($request->name),
+                            'email' => $request->email,
+                            'password' => Hash::make($code->codigo),
+                            'estado' => 'activo'
+                        ]);
 
-                    $months = $code->months;
-                    $hoy = Carbon::now()->format('Y-m-d');
-                    $fecha = date("Y-m-d",strtotime($hoy."+ ".$months." month"));
-                    $final = date("Y-m-d",strtotime($fecha."- 1 days")); 
-                    Acceso::create([
-                        'user_id' => $user->id, 
-                        'libro_id' => $code->libro_id, 
-                        'months' => $months,
-                        'inicio' => $hoy,
-                        'final'  => $final
-                    ]);
-                    
-                    event(new Registered($user));
+                        $months = $code->months;
+                        $hoy = Carbon::now()->format('Y-m-d');
+                        $fecha = date("Y-m-d",strtotime($hoy."+ ".$months." month"));
+                        $final = date("Y-m-d",strtotime($fecha."- 1 days")); 
+                        Acceso::create([
+                            'user_id' => $user->id, 
+                            'libro_id' => $code->libro_id, 
+                            'months' => $months,
+                            'inicio' => $hoy,
+                            'final'  => $final
+                        ]);
 
-                    \DB::commit();
-                } catch (Exception $e) {
-                    \DB::rollBack();
-                    return response()->json($e->getMessage());
+                        $code->update(['limite' => $code->limite - 1]);
+                        
+                        event(new Registered($user));
+
+                        \DB::commit();
+                    } catch (Exception $e) {
+                        \DB::rollBack();
+                        return response()->json($e->getMessage());
+                    }
+                    return redirect()->route('login')->with('status', 'Estamos a punto de terminar. Por favor, revisa tu correo electrónico y haz clic en el enlace que te hemos enviado para poder acceder.');
                 }
-                return redirect()->route('login')->with('status', 'Estamos a punto de terminar. Por favor, revisa tu correo electrónico y haz clic en el enlace que te hemos enviado para poder acceder.');
+                return redirect()->route('register')->with('status', 'El código ingresado no es válido. Por favor, dirígete a la sección de Soporte.');
             }
-            return redirect()->route('register')->with('status', 'Tus datos ya se encuentran registrados.');
+            return redirect()->route('login')->with('status', 'Tus datos ya están registrados. Puedes Iniciar sesión.');
         }
-        
-        return redirect()->route('register')->with('status', 'El código que ingresaste no es valido, por favor revisa y vuelve a intentarlo.');
+        return redirect()->route('register')->with('status', 'El código ingresado no es válido. Por favor, revisa y vuelve a intentarlo.');
     }
 }
