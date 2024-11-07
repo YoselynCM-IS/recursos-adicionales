@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Code;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -33,6 +34,22 @@ class LoginController extends Controller
     }
 
     //** FUNCIONES SOBREESCRITAS */
+    /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        $code = Code::where('codigo', $request->password)->first();
+        return [
+            'email' =>  $request->email,
+            'password' =>  $request->password,
+            'code_id' => $code->id
+        ];
+    }
+
     public function redirectPath(){
         if(auth()->user()->role->role == 'admin'){
             return 'admin/usuarios';
@@ -42,9 +59,10 @@ class LoginController extends Controller
     }
 
     //Sobreescribir metodo logout para cerrar sesion, y nos ubique en la vista login
-    public function logout(){
-        auth()->logout(); //Para poder cerrar sesión de la aplicación
-        session()->flush(); //Limpiar todas las sesiones
+    public function logout(Request $request){
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect('/login');
     }
 }

@@ -9,7 +9,7 @@ use App\Acceso;
 use App\Role;
 use App\Code;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 

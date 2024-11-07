@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 // USUARIOS
-Route::name('users.')->prefix('users')->group(function () {
+Route::name('users.')->prefix('users')->middleware(['auth', 'verified'])->group(function () {
     // Página principal de usuarios
     Route::get('index', 'UserController@index')->name('index');
     // Guardar informacion del usuario
@@ -42,7 +45,7 @@ Route::name('users.')->prefix('users')->group(function () {
 });
 
 // LIBROS
-Route::name('libros.')->prefix('libros')->group(function () {
+Route::name('libros.')->prefix('libros')->middleware(['auth', 'verified'])->group(function () {
     // Obtener todos los libros (Por coincidencia)
     Route::get('show', 'LibroController@show')->name('show');
     // Obtener todos los libros (Por coincidencia) PAGINADO
@@ -89,7 +92,20 @@ Route::name('libros.')->prefix('libros')->group(function () {
 
 // *** USUARIOS
 // ADMIN
-Route::name('admin.')->prefix('admin')->group(function () {
+Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('usuarios', 'AdminController@usuarios')->name('usuarios');
     Route::get('libros', 'AdminController@libros')->name('libros');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('verify-email', EmailVerificationPromptController::class)
+                ->name('verification.notice');
+
+    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+                ->middleware(['signed', 'throttle:6,1'])
+                ->name('verification.verify');
+
+    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+                ->middleware('throttle:6,1')
+                ->name('verification.send');
 });

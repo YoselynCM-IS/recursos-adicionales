@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Acceso;
 use App\Code;
+use App\User;
 
 class RegisterController extends Controller
 {
@@ -76,7 +77,7 @@ class RegisterController extends Controller
                         'code_id' => $code->id, 
                         'name' => strtoupper($request->name),
                         'email' => $request->email,
-                        'password' => Hash::make($request->password),
+                        'password' => Hash::make($code->codigo),
                         'estado' => 'activo'
                     ]);
 
@@ -91,6 +92,8 @@ class RegisterController extends Controller
                         'inicio' => $hoy,
                         'final'  => $final
                     ]);
+                    
+                    event(new Registered($user));
 
                     \DB::commit();
                 } catch (Exception $e) {
