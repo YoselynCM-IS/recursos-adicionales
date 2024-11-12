@@ -22,26 +22,16 @@ Auth::routes();
 Route::name('users.')->prefix('users')->middleware(['auth', 'verified'])->group(function () {
     // Página principal de usuarios
     Route::get('index', 'UserController@index')->name('index');
-    // Guardar informacion del usuario
-    Route::put('save_inf', 'UserController@save_inf')->name('save_inf');
     // Obtener todos los roles
     Route::get('get_roles', 'UserController@get_roles')->name('get_roles');
-    // Guardar usuario (Individual)
-    Route::post('store', 'UserController@store')->name('store');
     // Acru informacion del usuario
     Route::put('update', 'UserController@update')->name('update');
-    // Guardar usuarios (Masivamente)
+    // Guardar usuarios (Masivamente) (OBSOLETE)
     Route::post('store_mass', 'UserController@store_mass')->name('store_mass');
-    // Obtener los usuarios por roles
-    Route::get('get_users', 'UserController@get_users')->name('get_users');
     // Deshabilitar/Habilitar usuario
     Route::put('des_habilitar', 'UserController@des_habilitar')->name('des_habilitar');
-    // Obtener los usuarios por libro y rol
-    Route::get('by_libro', 'UserController@by_libro')->name('by_libro');
-    // Obtener los usuarios por estado y rol
-    Route::get('by_estado', 'UserController@by_estado')->name('by_estado');
-    // Descargar lista de usuarios por libro y rol
-    Route::get('download_bysearch/{role_id}/{libro_id}/{estado}', 'UserController@download_bysearch')->name('download_bysearch');
+    // Obtener los usuarios por codigo
+    Route::get('by_code', 'UserController@by_code')->name('by_code');
 });
 
 // LIBROS
@@ -90,6 +80,16 @@ Route::name('libros.')->prefix('libros')->middleware(['auth', 'verified'])->grou
     Route::get('download_bysearch/{libro}/{tipo_id}', 'LibroController@download_bysearch')->name('download_bysearch');
 });
 
+// CODES
+Route::name('codes.')->prefix('codes')->middleware(['auth', 'verified'])->group(function () {
+    // Guardar codigo
+    Route::post('store', 'CodeController@store')->name('store');
+    // Obtener codigos por libro
+    Route::get('by_libro', 'CodeController@by_libro')->name('by_libro');
+    // Obtener codigos por coincidencia
+    Route::get('show', 'CodeController@show')->name('show');
+});
+
 // *** USUARIOS
 // ADMIN
 Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
@@ -100,11 +100,9 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
                 ->name('verification.notice');
-
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
                 ->middleware(['signed', 'throttle:6,1'])
                 ->name('verification.verify');
-
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
                 ->middleware('throttle:6,1')
                 ->name('verification.send');

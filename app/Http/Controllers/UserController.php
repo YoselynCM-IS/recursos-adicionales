@@ -2,34 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\UsersListExport;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Recurso;
 use App\Acceso;
 use App\Libro;
 use App\User;
 use App\Role;
-use Excel;
 
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    // GUARDAR INFORMACION DEL USUARIO
-    public function save_inf(Request $request){
-        $user = auth()->user();
-        $acceso = Acceso::find($user->acceso->id);
-        $months = $acceso->months;
-        $hoy = Carbon::now()->format('Y-m-d');
-        $final = $this->get_final($hoy, $months);
-
-        $this->update_user($user, $request);
-        $this->update_acceso($acceso, $months, $hoy, $final);
-        return response()->json(true);
     }
 
     // OBTENER FECHA FINAL
@@ -58,18 +42,6 @@ class UserController extends Controller
     public function get_roles(){
         $roles = Role::get();
         return response()->json($roles);
-    }
-
-    // GUARDAR USUARIO
-    public function store(Request $request){
-        $role_id = $request->role_id;
-        $libro_id = $request->libro_id;
-        $libros_count = $this->get_count_libros($role_id, $libro_id);
-        $libro = Libro::find($libro_id);
-        $codigo = $this->set_codigo($role_id, $libros_count + 1, $libro->code);
-        $this->create_user($request, $codigo);
-
-        return response()->json(true);
     }
 
     // CREAR USUARIO
@@ -131,18 +103,10 @@ class UserController extends Controller
         return $role_id.$code.$ale_l.$numero;
     }
 
-    // OBTENER TODOS LOS USUARIOS POR ROLE
-    public function get_users(Request $request){
-        $users = User::where('role_id', $request->role_id)
-                ->with('acceso.libro')
-                ->orderBy('created_at', 'desc')->paginate(25);
-        return response()->json($users);
-    }
-
     // ACTUALIZAR INFORMACION DEL USUARIO
     public function update(Request $request){
-        $user = User::find($request->id);
-        $acceso = Acceso::find($user->acceso->id);
+        $user = User::whereId($request->id)->with('acceso')->first();
+        $acceso = $user->acceso;
         $months = $request->months;
         $inicio = $request->inicio;
 
@@ -153,14 +117,7 @@ class UserController extends Controller
             $this->update_acceso($acceso, $months, $inicio, $final);
         } 
         
-        $datos = [
-            'name' => $user->name,
-            'email' => $user->email,
-            'months' => $acceso->months,
-            'inicio' => $acceso->inicio,
-            'final' => $acceso->final
-        ];
-        return response()->json($datos);
+        return response()->json($user);
     }
 
     // ACTUALIZAR ACCESO
@@ -181,14 +138,10 @@ class UserController extends Controller
 
     // DESHABILITAR/HABILITAR USUARIO
     public function des_habilitar(Request $request){
-        $user = User::find($request->id);
-        
-        if($request->estado == 2) $estado = 'activo';
-        if($request->estado == 4) $estado = 'deshabilitado';
-
         \DB::beginTransaction();
         try {
-            $user->update([ 'estado' =>  $estado]);
+            $user = User::find($request->id);
+            $user->update([ 'estado' =>  $user->estado == 'activo' ? 'deshabilitado':'activo']);
             \DB::commit();
         } catch (Exception $e) {
             \DB::rollBack();
@@ -253,34 +206,11 @@ class UserController extends Controller
     }
 
     // OBTENER USUARIOS POR LIBRO Y ROL
-    public function by_libro(Request $request){
-        $accesos = Acceso::select('user_id')
-                ->where('libro_id', $request->libro_id)->get();
-        
-        $ids = [];
-        $accesos->map(function($acceso) use(&$ids){
-            $ids[] = $acceso->user_id;
-        });
-
-        $users = User::where('role_id', $request->role_id)
-                ->whereIn('id', $ids)
+    public function by_code(Request $request){
+        $users = User::where('code_id', $request->code_id)
                 ->with('acceso.libro')
-                ->orderBy('created_at', 'desc')->paginate(25);
+                ->orderBy('created_at', 'desc')->paginate(50);
 
         return response()->json($users);
-    }
-
-    // OBTENER USUARIOS POR ROL Y ESTADO
-    public function by_estado(Request $request){
-        $users = User::where('role_id', $request->role_id)
-                ->where('estado', $request->estado)
-                ->with('acceso.libro')
-                ->orderBy('created_at', 'desc')->paginate(25);
-        return response()->json($users);
-    }
-
-    // DESCARGAR LISTA DE USUARIOS POR ROL Y LIBRO
-    public function download_bysearch($role_id, $libro_id, $estado){
-        return Excel::download(new UsersListExport($role_id, $libro_id, $estado), 'lista-usuarios.xlsx');
     }
 }

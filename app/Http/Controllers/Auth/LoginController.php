@@ -43,10 +43,11 @@ class LoginController extends Controller
     protected function credentials(Request $request)
     {
         $code = Code::where('codigo', $request->password)->first();
+        $code_id = $code ? $code->id:0;
         return [
             'email' =>  $request->email,
             'password' =>  $request->password,
-            'code_id' => $code->id
+            'code_id' => $code_id
         ];
     }
 
