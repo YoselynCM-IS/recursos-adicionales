@@ -105,7 +105,7 @@ class RegisterController extends Controller
                     }
                     return redirect()->route('login')->with('status', 'Estamos a punto de terminar. Por favor, revisa tu correo electrónico y haz clic en el enlace que te hemos enviado para poder acceder.');
                 }
-                return redirect()->route('register')->with('status', 'El código ingresado no es válido. Por favor, dirígete a la sección de Soporte.');
+                return redirect()->route('register')->with('status', 'El código ingresado no es válido.');
             }
             return redirect()->route('login')->with('status', 'Tus datos ya están registrados. Puedes Iniciar sesión.');
         }

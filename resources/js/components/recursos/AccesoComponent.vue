@@ -1,9 +1,11 @@
 <template>
     <div>
         <b-card overlay :title="libro.libro" sub-title="Recursos"
-            text-variant="white"
+            text-variant="white" sub-title-text-variant="white"
             img-src="https://picsum.photos/900/100/?image=4">
         </b-card>
+        <!-- img-src="https://dl.dropboxusercontent.com/scl/fi/7i2s6b4ft5r186kosfxct/CLUES-ALL-AROND-1-HEADER.png?rlkey=m0bej5kp4x2jmd5yv24wzg3bh&st=fw4j7478&dl=0"
+            img-height="150" -->
         <b-card>
             <b-row>
                 <b-col v-for="(recurso, i) in libro.recursos" v-bind:key="i" sm="4">
@@ -36,29 +38,26 @@
         </b-card>
         <!-- MODALS -->
         <!-- MOSTRAR LINKS -->
-        <b-modal ref="modal-enlaces" title="" hide-footer
-            size="xl">
-            <!-- :size="showByTipo == 'Games' ? 'xl':'md'" -->
+        <b-modal ref="modal-enlaces" title="" hide-footer :size="showByTipo == 'Audios' ? 'md':'xl'">
             <div v-if="!load">
                 <b-embed v-if="showByTipo == 'Games' || showByTipo == 'Flipbook'" type="iframe"
                     aspect="16by9" :src="enlaceRecurso" allowfullscreen>
                 </b-embed>
                 <b-table v-else :items="enlaces" :fields="fields">
                     <template v-slot:cell(view)="data">
-                        <b-button v-if="data.item.tipo == 'sitio'"
+                        <label>{{ data.item.nombre }}</label>
+                        <audio :title="data.item.nombre" controls="true">
+                            <source :src="set_link(data.item.link)">
+                        </audio>
+                        <!-- <b-button v-if="data.item.tipo == 'sitio'"
                             size="sm" pill variant="info" :href="data.item.link" target="blank">
                                 <b-icon-link45deg></b-icon-link45deg> Visitar
-                        </b-button>
-                        <div v-else>
-                            <audio :title="data.item.nombre" controls="true">
-                                <source :src="set_link(data.item.link)">
-                            </audio>
-                        </div>
+                        </b-button>-->
                     </template>
                     <template v-slot:cell(download)="data">
                         <b-button v-if="data.item.tipo == 'track'"
                             :href="`${down_link(data.item.link)}`"
-                            pill size="sm" variant="primary">
+                            pill size="sm" variant="dark">
                             <b-icon-download></b-icon-download>
                         </b-button>
                     </template>
@@ -80,9 +79,8 @@ export default {
     data(){
         return {
             fields: [
-                { key: 'nombre', label: '' },
-                { key: 'view', label: '' },
-                { key: 'download', label: '' }
+                { key: 'view', label: 'Audio' },
+                { key: 'download', label: 'Descargar' }
             ],
             link: '',
             showByTipo: 'links',
@@ -101,8 +99,8 @@ export default {
                 this.enlaceRecurso = recurso.pivot.link;
                 this.showByTipo = 'Games';
             } 
-            if(recurso.recurso.includes('Links')) {
-                this.showByTipo = 'Links';
+            if(recurso.recurso.includes('Audios')) {
+                this.showByTipo = 'Audios';
                 this.get_enlaces(this.libro.id, recurso.id);
             }
             if(recurso.recurso.includes('Flipbook')){
