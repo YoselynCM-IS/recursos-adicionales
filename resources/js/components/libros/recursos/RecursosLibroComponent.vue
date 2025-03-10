@@ -135,10 +135,9 @@ export default {
             this.formEnlace.recurso_id = recurso.id;
             this.$refs['modal-enlaces'].show();
         },
-        verify_recurso_1(recurso){
-            if(recurso == 'Enlaces') return false;
+        verify_recurso_1(recurso){ 
+            if(recurso == 'Audios') return false;
             if(recurso == 'Links') return false;
-            if(recurso == 'Links Tracks') return false;
             return true;
         }
     }
