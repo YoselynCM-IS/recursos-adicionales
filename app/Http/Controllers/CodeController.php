@@ -52,4 +52,19 @@ class CodeController extends Controller
                 ->with('libro', 'role')->orderBy('id', 'desc')->paginate(50);
         return response()->json($codes);
     }
+
+    // INCREMENTAR USUARIOS
+    public function incrementar(Request $request){
+        \DB::beginTransaction();
+        try {
+            \DB::table('codes')->whereId($request->id)
+                ->increment('limite', (int) $request->incremento); 
+            \DB::commit();
+        } catch (Exception $e) {
+            \DB::rollBack();
+            return response()->json($e->getMessage());
+        }
+        
+        return response()->json(true);
+    }
 }

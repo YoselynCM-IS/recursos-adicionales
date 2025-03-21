@@ -88,6 +88,8 @@ Route::name('codes.')->prefix('codes')->middleware(['auth', 'verified'])->group(
     Route::get('by_libro', 'CodeController@by_libro')->name('by_libro');
     // Obtener codigos por coincidencia
     Route::get('show', 'CodeController@show')->name('show');
+    // Incrementar usuarios
+    Route::put('incrementar', 'CodeController@incrementar')->name('incrementar');
 });
 
 // *** USUARIOS

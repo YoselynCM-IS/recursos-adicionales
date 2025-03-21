@@ -9,6 +9,10 @@
                     @click="showUsers(data.item, data.index)">
                     <b-icon-people></b-icon-people>
                 </b-button>
+                <b-button variant="success" pill size="sm" 
+                    @click="incrementUsers(data.item, data.index)">
+                    <b-icon-plus></b-icon-plus>
+                </b-button>
             </template>
         </b-table>
         <load-component v-else></load-component>
@@ -58,15 +62,19 @@
                 </div>
             </b-form>
         </b-modal>
+        <b-modal ref="modal-incrementar" :title="`${codigo.codigo} - Incrementar usuarios`" size="sm" hide-footer>
+            <increment-component :form="codigo" @updateLimite="updateLimite"></increment-component>
+        </b-modal>
     </div>
 </template>
 
 <script>
 import MessageComponent from '../partials/MessageComponent.vue';
 import LoadComponent from '../partials/LoadComponent.vue'
+import IncrementComponent from './add/IncrementComponent.vue';
 export default {
     props: ['users'],
-    components: { LoadComponent, MessageComponent },
+    components: { LoadComponent, MessageComponent, IncrementComponent },
     data(){
         return {
             load: false,
@@ -100,7 +108,12 @@ export default {
                 estado: null 
             },
             registros: {},
-            total_registros: 0
+            total_registros: 0,
+            codigo: {
+                id: null,
+                codigo: null,
+                incremento: 0
+            }
         }
     },
     methods: {
@@ -132,6 +145,25 @@ export default {
             }).catch(error => {
                 this.load = false;
             });
+        },
+        // INCREMENTAR USUARIOS
+        incrementUsers(code, position){
+            this.ini_codigo(code.id, code.codigo, 0, position);
+            this.$refs['modal-incrementar'].show();
+        },
+        // USUARIOS INCREMENTADOS
+        updateLimite(){
+            this.users.data[this.position].limite += parseInt(this.codigo.incremento);
+            this.$refs['modal-incrementar'].hide();
+            swal("OK", "Se incremento el limite de usuarios correctamente.", "success")
+            this.ini_codigo(null, null, 0, null);
+        },
+        // INICIALIZAR VALORES DE VARIABLES CODIGO
+        ini_codigo(id, codigo, incremento, position){
+            this.codigo.id = id;
+            this.codigo.codigo = codigo;
+            this.codigo.incremento = incremento;
+            this.position = position;
         },
         // USUARIO ACTUALIZADO
         updateUser(user){
