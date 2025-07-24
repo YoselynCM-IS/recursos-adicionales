@@ -136,7 +136,7 @@ export default {
             this.$refs['modal-enlaces'].show();
         },
         verify_recurso_1(recurso){ 
-            if(recurso == 'Audios') return false;
+            if(recurso.includes('Audios')) return false; 
             if(recurso == 'Links') return false;
             return true;
         }
