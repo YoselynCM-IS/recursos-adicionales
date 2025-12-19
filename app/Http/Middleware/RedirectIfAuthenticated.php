@@ -21,7 +21,11 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
             if(auth()->user()->role->role == 'admin'){
                 return redirect()->route('admin.usuarios');
-            } else {
+            }
+            if(auth()->user()->role->role == 'editor'){
+                return redirect()->route('editor.libros');
+            }
+            if(auth()->user()->role->role == 'teacher' || auth()->user()->role->role == 'student'){
                 return redirect()->route('users.index');
             }
         }

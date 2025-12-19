@@ -94,8 +94,13 @@ Route::name('codes.')->prefix('codes')->middleware(['auth', 'verified'])->group(
 
 // *** USUARIOS
 // ADMIN
-Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('usuarios', 'AdminController@usuarios')->name('usuarios');
+    Route::get('libros', 'AdminController@libros')->name('libros');
+});
+
+// EDITOR
+Route::name('editor.')->prefix('editor')->middleware(['auth', 'verified', 'role:editor'])->group(function () {
     Route::get('libros', 'AdminController@libros')->name('libros');
 });
 
