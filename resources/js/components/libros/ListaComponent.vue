@@ -2,7 +2,7 @@
     <div>
         <!-- ENCABEZADO -->
         <b-row class="mb-3">
-            <b-col sm="5">
+            <b-col sm="4">
                 <!-- PAGINACION -->
                 <pagination size="default" :limit="1" 
                     :data="libros" @pagination-change-page="get_results">
@@ -25,7 +25,7 @@
                         required :disabled="load" @change="getTipo"></b-form-select>
                 </b-form-group>
             </b-col>
-            <b-col sm="2">
+            <b-col sm="2" v-if="role == 'admin'">
                 <b-button pill variant="dark" block
                     :disabled="queryLibro == null && queryTipo == null"
                     :href="`/libros/download_bysearch/${queryLibro}/${queryTipo}`">
@@ -33,7 +33,7 @@
                 </b-button>
             </b-col>
             <b-col sm="2">
-                <b-button variant="success" pill block @click="newLibro()">
+                <b-button v-if="role == 'admin'" variant="success" pill block @click="newLibro()">
                     <b-icon-plus-circle></b-icon-plus-circle> Agregar libro
                 </b-button>
                 <b-button variant="info" pill block @click="showRecursos = true">
@@ -59,18 +59,20 @@
                 </b-button>
             </template>
             <template v-slot:cell(actions)="data">
-                <b-button variant="warning" pill size="sm"
+                <b-button v-if="role == 'admin'" variant="warning" pill size="sm"
                     @click="editLibro(data.item, data.index)">
                     <b-icon-pencil></b-icon-pencil>
                 </b-button>
-                <b-button v-if="data.item.estado == 'activo'" variant="secondary" 
-                    pill size="sm" @click="de_activateLibro(data.item, data.index, 2)">
-                    <b-icon-x></b-icon-x>
-                </b-button>
-                <b-button v-else variant="success" pill size="sm"
-                    @click="de_activateLibro(data.item, data.index, 1)">
-                    <b-icon-check></b-icon-check>
-                </b-button>
+                <div v-if="role == 'admin'">
+                    <b-button v-if="data.item.estado == 'activo'" variant="secondary" 
+                        pill size="sm" @click="de_activateLibro(data.item, data.index, 2)">
+                        <b-icon-x></b-icon-x>
+                    </b-button>
+                    <b-button v-else variant="success" pill size="sm"
+                        @click="de_activateLibro(data.item, data.index, 1)">
+                        <b-icon-check></b-icon-check>
+                    </b-button>
+                </div>
             </template>
         </b-table>
         <load-component v-else></load-component>
@@ -112,6 +114,7 @@ import LoadComponent from '../partials/LoadComponent.vue';
 import setTipo from '../../mixins/setTipo';
 import TiposMixin from '../../mixins/TiposMixin';
 export default {
+    props: ['role'],
     components: {LoadComponent},
     mixins: [setTipo,TiposMixin],
     data(){
